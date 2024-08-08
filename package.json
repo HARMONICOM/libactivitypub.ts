@@ -1,0 +1,17 @@
+{
+  "name": "libactivitypub.ts",
+  "module": "main.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "scripts": {
+    "lint": "bunx --bun eslint .",
+    "lint:fix": "bunx --bun eslint --fix .",
+    "format": "bunx --bun prettier --write './**/*.{js,ts,vue}'",
+    "run": "bun run --bun index.ts"
+  }
+}
