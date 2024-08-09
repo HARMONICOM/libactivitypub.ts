@@ -1,6 +1,9 @@
-import { Store } from './Base/Store'
+import { AP_CONTENT_TYPE, LIB_NAME } from './ActivityPub'
+import { Module } from './Base/Module'
 
-export class MisskeyStore extends Store {
+const USER_AGENT = `${LIB_NAME} (MisskeyModule)`
+
+export class MisskeyModule extends Module {
   public note: Partial<Note> = {}
   public actor: Partial<Actor> = {}
   public nodeinfo: Partial<NodeInfo> = {}
@@ -10,7 +13,86 @@ export class MisskeyStore extends Store {
     super()
   }
 
-  public storeNote(data: any) {
+  public async pickActorUrl(note: Note) {
+    return note.attributedTo
+  }
+
+  public async getNote(url: string): Promise<Note | undefined> {
+   try {
+      const target = new URL(url)
+      const options = {
+        method: 'GET',
+        headers: {
+          host: target.hostname,
+          'user-agent': USER_AGENT,
+          'accept': AP_CONTENT_TYPE,
+        },
+      }
+      const res = await fetch(target.href, options)
+      return await res.json()
+    } catch(e) {
+    }
+  }
+
+  public async getActor(url: string): Promise<Actor | undefined> {
+    try {
+      const target = new URL(url)
+      const options = {
+        method: 'GET',
+        headers: {
+          host: target.hostname,
+          'user-agent': USER_AGENT,
+          'accept': AP_CONTENT_TYPE,
+        },
+      }
+      const res = await fetch(target.href, options)
+      return await res.json()
+    } catch(e) {
+    }
+  }
+
+  public async getNodeInfo(host: string): Promise<NodeInfo | undefined> {
+    try {
+      const target = new URL(host)
+      const options = {
+        method: 'GET',
+        headers: {
+          host: target.hostname,
+          'user-agent': USER_AGENT,
+          'accept': AP_CONTENT_TYPE,
+        },
+      }
+      let res
+      const wellknownUrl = `https://${target.host}/.well-known/nodeinfo`
+      res = await fetch(wellknownUrl, options)
+      const wellknown = await res.json()
+      const nodeinfoUrl = wellknown.links[0]?.href
+      if (!nodeinfoUrl) return
+      res = await fetch(nodeinfoUrl, options)
+      return await res.json()
+    } catch(e) {
+    }
+  }
+
+  public async getManifest(host: string): Promise<Manifest | undefined> {
+    try {
+      const target = new URL(host)
+      const options = {
+        method: 'GET',
+        headers: {
+          host: target.hostname,
+          'user-agent': USER_AGENT,
+          'accept': AP_CONTENT_TYPE,
+        },
+      }
+      const manifestUrl = `https://${target.host}/manifest.json`
+      const res = await fetch(manifestUrl, options)
+      return await res.json()
+    } catch(e) {
+    }
+  }
+
+  public storeNote(data: Note) {
     this.note = {}
     this.note = {
       id: data.id,
@@ -27,7 +109,7 @@ export class MisskeyStore extends Store {
     }
   }
 
-  public storeActor(data: any) {
+  public storeActor(data: Actor) {
     this.actor = {}
     this.actor = {
       type: data.type,
@@ -72,7 +154,7 @@ export class MisskeyStore extends Store {
     }
   }
 
-  public storeNodeInfo(data: any) {
+  public storeNodeInfo(data: NodeInfo) {
     this.nodeinfo = {}
     this.nodeinfo = {
       version: data.version,
@@ -102,8 +184,8 @@ export class MisskeyStore extends Store {
         nodeDescription: data.metadata.nodeDescription,
         nodeAdmins: data.metadata.nodeAdmins,
         maintainer: {
-          name: data.maintainer.name,
-          email: data.maintainer.email,
+          name: data.metadata.maintainer.name,
+          email: data.metadata.maintainer.email,
         },
         langs: data.metadata.langs,
         tosUrl: data.metadata.tosUrl,
@@ -129,7 +211,7 @@ export class MisskeyStore extends Store {
     }
   }
 
-  public storeManifest(data: any) {
+  public storeManifest(data: Manifest) {
     this.manifest = {}
     this.manifest = {
       short_name: data.short_name,
@@ -151,7 +233,6 @@ export class MisskeyStore extends Store {
       }
     }
   }
-
 }
 
 export interface Note {
