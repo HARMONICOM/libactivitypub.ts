@@ -37,36 +37,224 @@ export class ActivityPub {
       res = await fetch(nodeinfoUrl, options)
       const nodeinfo = await res.json()
       return nodeinfo.software.name
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars,no-empty
     } catch(e) {
     }
   }
 
-  public async loadNote(url: string) {
+  public async loadNote(url: string): Promise<void> {
     if (typeof this.module.storeNote === 'undefined') return
     if (typeof this.module.getNote === 'undefined') return
-
     this.module.storeNote(await this.module.getNote(url))
   }
 
-  public async loadStatus(actorUrl: string) {
-    this.module.storeActor(await this.module.getActor(host))
-    this.module.storeInstance(await this.module.getManifest(host))
-    this.module.storeManifest(await this.module.getManifest(host))
-
+  public async loadActor(actorUrl: string): Promise<void> {
+    if (typeof this.module.storeActor === 'undefined') return
+    if (typeof this.module.getActor === 'undefined') return
+    this.module.storeActor(await this.module.getActor(actorUrl))
   }
 
-  public async loadManifest(host: string) {
+  public async loadNodeInfo(actorUrl: string): Promise<void> {
+    if (typeof this.module.storeNodeInfo === 'undefined') return
+    if (typeof this.module.getNodeInfo === 'undefined') return
+    this.module.storeNodeInfo(await this.module.getNodeInfo(actorUrl))
+  }
+
+  public async loadManifest(actorUrl: string): Promise<void> {
     if (typeof this.module.storeManifest === 'undefined') return
     if (typeof this.module.getManifest === 'undefined') return
-
-    this.module.storeManifest(await this.module.getManifest(host))
+    this.module.storeManifest(await this.module.getManifest(actorUrl))
   }
 
-  public async formActorFromNote() {
-    if (typeof this.module.pickActorUrl === 'undefined') return
-    if (typeof this.module.note === 'undefined') return
+  public async loadAll(noteUrl: string){
+    await this.loadNote(noteUrl)
+    await this.loadStatus(this.module.note.attributedTo)
+  }
 
-    const actor = this.module.pickActorUrl(this.module.note)
+  public async loadStatus(actorUrl: string): Promise<void> {
+    await this.loadActor(actorUrl)
+    await this.loadNodeInfo(actorUrl)
+    await this.loadManifest(actorUrl)
+  }
 
+  public pickNoteData(): NoteData | undefined{
+    if (typeof this.module.pickNoteData === 'undefined') return
+    return this.module.pickNoteData()
+  }
+
+  public pickActorData(): ActorData | undefined{
+    if (typeof this.module.pickActorData === 'undefined') return
+    return this.module.pickActorData()
   }
 }
+
+export interface NoteData {
+  note: {
+    id: string
+    type: string
+    content: string
+    formedContent: string
+    attributedTo: string
+    published: string
+    to?: string[]
+    cc?: string[]
+    inReplyTo: string | null
+    attachment?: [
+      {
+        type: string
+        mediaType: string
+        url: string
+        name: string | null
+        sensitive: boolean
+      }?,
+    ]
+    sensitive: boolean
+    tag?: [
+      {
+        type: string
+        href: string
+        name: string
+      }?,
+    ]
+  }
+  actor: {
+    type: string
+    id: string
+    url: string
+    preferredUsername: string
+    name: string
+    formedName: string
+    icon?: {
+      type: string
+      url: string
+      sensitive: boolean
+      name: string | null
+    }
+    image?: {
+      type: string
+      url: string
+      sensitive: boolean
+      name: string | null
+    }
+    tag: [
+      {
+        type: string
+        href: string
+        name: string
+      }?,
+    ]
+    discoverable: boolean
+    attachment: [
+      {
+        type: boolean
+        name: boolean
+        value: boolean
+      }?,
+    ]
+  }
+  instance: {
+    formedName: string
+    shortName: string
+    themeColor: string
+    icons?: [
+      {
+        src: string
+        sizes: string
+        type: string
+        purpose: string
+      },
+    ]
+    software: {
+      name: string
+      version: string
+    },
+    metadata: {
+      nodeName: string
+      themeColor: string
+    }
+  }
+}
+
+export interface ActorData {
+  actor: {
+    type: string
+    id: string
+    url: string
+    preferredUsername: string
+    name: string
+    formedName: string
+    icon?: {
+      type: string
+      url: string
+      sensitive: boolean
+      name: string | null
+    }
+    image?: {
+      type: string
+      url: string
+      sensitive: boolean
+      name: string | null
+    }
+    tag: [
+      {
+        type: string
+        href: string
+        name: string
+      }?,
+    ]
+    discoverable: boolean
+    attachment: [
+      {
+        type: boolean
+        name: boolean
+        value: boolean
+      }?,
+    ]
+  }
+  instance: {
+    formedName: string
+    shortName: string
+    themeColor: string
+    icons?: [
+      {
+        src: string
+        sizes: string
+        type: string
+        purpose: string
+      },
+    ]
+    software: {
+      name: string
+      version: string
+    },
+    metadata: {
+      nodeName: string
+      themeColor: string
+    }
+  }
+}
+
+export interface InstanceData {
+  instance: {
+    formedName: string
+    shortName: string
+    themeColor: string
+    icons?: [
+      {
+        src: string
+        sizes: string
+        type: string
+        purpose: string
+      },
+    ]
+    software: {
+      name: string
+      version: string
+    },
+    metadata: {
+      nodeName: string
+      themeColor: string
+    }
+  }
+}
+

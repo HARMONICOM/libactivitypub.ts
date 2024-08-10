@@ -3,15 +3,25 @@
   "module": "main.ts",
   "type": "module",
   "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
+    "@eslint/js": "^9.8.0",
+    "@stylistic/eslint-plugin": "^2.6.2",
+    "@stylistic/eslint-plugin-js": "^2.6.2",
+    "@stylistic/eslint-plugin-ts": "^2.6.2",
+    "@types/bun": "latest",
+    "@types/eslint__js": "^8.42.3",
+    "@typescript-eslint/eslint-plugin": "^8.0.1",
+    "@typescript-eslint/parser": "^8.0.1",
+    "eslint": "^9.8.0",
+    "globals": "^15.9.0",
+    "jest-to-equal-type": "^0.1.0",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.0.1"
   },
   "scripts": {
     "lint": "bunx --bun eslint .",
-    "lint:fix": "bunx --bun eslint --fix .",
-    "format": "bunx --bun prettier --write './**/*.{js,ts,vue}'",
-    "run": "bun run --bun index.ts"
+    "format": "bunx --bun eslint --fix .",
+    "typecheck": "bunx --bun tsc --noEmit",
+    "test": "bun typecheck && bun test",
+    "dev": "bun run --bun main.ts"
   }
 }

@@ -1,4 +1,10 @@
-import { AP_CONTENT_TYPE, LIB_NAME } from './ActivityPub'
+import {
+  AP_CONTENT_TYPE,
+  type ActorData,
+  type InstanceData,
+  LIB_NAME,
+  type NoteData,
+} from './ActivityPub'
 import { Module } from './Base/Module'
 
 const USER_AGENT = `${LIB_NAME} (MisskeyModule)`
@@ -11,14 +17,142 @@ export class MisskeyModule extends Module {
 
   constructor() {
     super()
+    this.note = {}
+    this.actor = {}
+    this.nodeinfo = {}
+    this.manifest = {}
   }
 
-  public async pickActorUrl(note: Note) {
-    return note.attributedTo
+  public pickNoteData(): NoteData | undefined {
+    if (!this.note) return
+    if (!this.actor) return
+    if (!this.nodeinfo) return
+    if (!this.manifest) return
+
+    const domain = new URL(this.note.id ?? '').host
+    const instanceName = this.manifest.name ?? this.nodeinfo.metadata?.nodeName ?? ''
+    const instanceShortName = this.manifest.short_name ?? ''
+    const themeColor = this.nodeinfo.metadata?.themeColor ?? this.manifest.theme_color ?? '#222222'
+
+    return {
+      note: {
+        id: this.note.id ?? '',
+        type: this.note.type ?? '',
+        content: this.note.content ?? '',
+        formedContent: MisskeyModule.deployEmoji(this.note.content ?? '', domain),
+        attributedTo: this.note.attributedTo ?? '',
+        published: this.note.published ?? '',
+        to: this.note.to,
+        cc: this.note.cc,
+        inReplyTo: this.note.type ?? null,
+        attachment: this.note.attachment,
+        sensitive: this.note.sensitive ?? false,
+        tag: this.note.tag,
+      },
+      actor: {
+        type: this.actor.type ?? '',
+        id: this.actor.id ?? '',
+        url: this.actor.url ?? '',
+        preferredUsername: this.actor.preferredUsername ?? '',
+        name: this.actor.name ?? '',
+        formedName: MisskeyModule.deployEmoji(this.actor.name ?? '', domain),
+        icon: this.actor.icon,
+        image: this.actor.image,
+        tag: this.actor.tag ?? [],
+        discoverable: this.actor.discoverable ?? false,
+        attachment: this.actor.attachment ?? [],
+      },
+      instance: {
+        formedName: MisskeyModule.deployEmoji(instanceName ?? '', domain),
+        shortName: MisskeyModule.deployEmoji(instanceShortName ?? '', domain),
+        themeColor: themeColor,
+        icons: this.manifest.icons,
+        software: {
+          name: this.nodeinfo.software?.name ?? '',
+          version: this.nodeinfo.software?.version ?? '',
+        },
+        metadata: {
+          nodeName: this.nodeinfo.metadata?.nodeName ?? '',
+          themeColor: this.nodeinfo.metadata?.themeColor ?? '',
+        },
+      },
+    }
+  }
+
+  public pickActorData(): ActorData | undefined {
+    if (!this.actor) return
+    if (!this.nodeinfo) return
+    if (!this.manifest) return
+
+    const domain = new URL(this.actor.id ?? '').host
+    const instanceName = this.manifest.name ?? this.nodeinfo.metadata?.nodeName ?? ''
+    const instanceShortName = this.manifest.short_name ?? ''
+    const themeColor = this.nodeinfo.metadata?.themeColor ?? this.manifest.theme_color ?? '#222222'
+
+    return {
+      actor: {
+        type: this.actor.type ?? '',
+        id: this.actor.id ?? '',
+        url: this.actor.url ?? '',
+        preferredUsername: this.actor.preferredUsername ?? '',
+        name: this.actor.name ?? '',
+        formedName: MisskeyModule.deployEmoji(this.actor.name ?? '', domain),
+        icon: this.actor.icon,
+        image: this.actor.image,
+        tag: this.actor.tag ?? [],
+        discoverable: this.actor.discoverable ?? false,
+        attachment: this.actor.attachment ?? [],
+      },
+      instance: {
+        formedName: MisskeyModule.deployEmoji(instanceName ?? '', domain),
+        shortName: MisskeyModule.deployEmoji(instanceShortName ?? '', domain),
+        themeColor: themeColor,
+        icons: this.manifest.icons,
+        software: {
+          name: this.nodeinfo.software?.name ?? '',
+          version: this.nodeinfo.software?.version ?? '',
+        },
+        metadata: {
+          nodeName: this.nodeinfo.metadata?.nodeName ?? '',
+          themeColor: this.nodeinfo.metadata?.themeColor ?? '',
+        },
+      },
+    }
+  }
+
+  public pickInstanceData(): InstanceData | undefined {
+    if (!this.nodeinfo) return
+    if (!this.manifest) return
+
+    const domain = new URL(this.actor.id ?? '').host
+    const instanceName = this.manifest.name ?? this.nodeinfo.metadata?.nodeName ?? ''
+    const instanceShortName = this.manifest.short_name ?? ''
+    const themeColor = this.nodeinfo.metadata?.themeColor ?? this.manifest.theme_color ?? '#222222'
+
+    return {
+      instance: {
+        formedName: MisskeyModule.deployEmoji(instanceName ?? '', domain),
+        shortName: MisskeyModule.deployEmoji(instanceShortName ?? '', domain),
+        themeColor: themeColor,
+        icons: this.manifest.icons,
+        software: {
+          name: this.nodeinfo.software?.name ?? '',
+          version: this.nodeinfo.software?.version ?? '',
+        },
+        metadata: {
+          nodeName: this.nodeinfo.metadata?.nodeName ?? '',
+          themeColor: this.nodeinfo.metadata?.themeColor ?? '',
+        },
+      },
+    }
+  }
+
+  public static deployEmoji(content: string, domain: string) {
+    return content.replace(/:([0-9a-zA-Z_]{3,}):/g, `<img src="https://${domain}/emoji/$1.webp" alt="$1" class="emoji">`)
   }
 
   public async getNote(url: string): Promise<Note | undefined> {
-   try {
+    try {
       const target = new URL(url)
       const options = {
         method: 'GET',
@@ -30,6 +164,7 @@ export class MisskeyModule extends Module {
       }
       const res = await fetch(target.href, options)
       return await res.json()
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars,no-empty
     } catch(e) {
     }
   }
@@ -47,13 +182,14 @@ export class MisskeyModule extends Module {
       }
       const res = await fetch(target.href, options)
       return await res.json()
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars,no-empty
     } catch(e) {
     }
   }
 
-  public async getNodeInfo(host: string): Promise<NodeInfo | undefined> {
+  public async getNodeInfo(url: string): Promise<NodeInfo | undefined> {
     try {
-      const target = new URL(host)
+      const target = new URL(url)
       const options = {
         method: 'GET',
         headers: {
@@ -70,13 +206,14 @@ export class MisskeyModule extends Module {
       if (!nodeinfoUrl) return
       res = await fetch(nodeinfoUrl, options)
       return await res.json()
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars,no-empty
     } catch(e) {
     }
   }
 
-  public async getManifest(host: string): Promise<Manifest | undefined> {
+  public async getManifest(url: string): Promise<Manifest | undefined> {
     try {
-      const target = new URL(host)
+      const target = new URL(url)
       const options = {
         method: 'GET',
         headers: {
@@ -88,6 +225,7 @@ export class MisskeyModule extends Module {
       const manifestUrl = `https://${target.host}/manifest.json`
       const res = await fetch(manifestUrl, options)
       return await res.json()
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars,no-empty
     } catch(e) {
     }
   }
@@ -121,7 +259,7 @@ export class MisskeyModule extends Module {
       featured: data.featured,
       sharedInbox: data.sharedInbox,
       endpoints: {
-        sharedInbox: data.endpoints.sharedInbox
+        sharedInbox: data.endpoints?.sharedInbox,
       },
       url: data.url,
       preferredUsername: data.preferredUsername,
@@ -129,25 +267,25 @@ export class MisskeyModule extends Module {
       summary: data.summary,
       _misskey_summary: data._misskey_summary,
       icon: {
-        type: data.icon.type,
-        url: data.icon.url,
-        sensitive: data.icon.sensitive,
-        name: data.icon.name,
+        type: data.icon?.type,
+        url: data.icon?.url,
+        sensitive: data.icon?.sensitive,
+        name: data.icon?.name,
       },
       image: {
-        type: data.image.type,
-        url: data.image.url,
-        sensitive: data.image.sensitive,
-        name: data.image.name,
+        type: data.image?.type,
+        url: data.image?.url,
+        sensitive: data.image?.sensitive,
+        name: data.image?.name,
       },
       tag: data.tag,
       manuallyApprovesFollowers: data.manuallyApprovesFollowers,
       discoverable: data.discoverable,
       publicKey: {
-        id: data.publicKey.id,
-        type: data.publicKey.type,
-        owner: data.publicKey.owner,
-        publicKeyPem: data.publicKey.publicKeyPem,
+        id: data.publicKey?.id,
+        type: data.publicKey?.type,
+        owner: data.publicKey?.owner,
+        publicKeyPem: data.publicKey?.publicKeyPem,
       },
       isCat: data.isCat,
       attachment: data.attachment,
@@ -159,55 +297,55 @@ export class MisskeyModule extends Module {
     this.nodeinfo = {
       version: data.version,
       software: {
-        name: data.software.name,
-        version: data.software.version,
-        homepage: data.software.homepage,
-        repository: data.software.repository,
+        name: data.software?.name,
+        version: data.software?.version,
+        homepage: data.software?.homepage,
+        repository: data.software?.repository,
       },
       protocols: data.protocols,
       services: {
-        inbound: data.services.inbound,
-        outbound: data.services.outbound,
+        inbound: data.services?.inbound,
+        outbound: data.services?.outbound,
       },
       openRegistrations: data.openRegistrations,
       usage: {
         users: {
-          total: data.usage.users.total,
-          activeHalfyear: data.usage.users.activeHalfyear,
-          activeMonth: data.usage.users.activeMonth,
+          total: data.usage?.users?.total,
+          activeHalfyear: data.usage?.users?.activeHalfyear,
+          activeMonth: data.usage?.users?.activeMonth,
         },
-        localPosts: data.usage.localPosts,
-        localComments: data.usage.localComments,
+        localPosts: data.usage?.localPosts,
+        localComments: data.usage?.localComments,
       },
       metadata: {
-        nodeName: data.metadata.nodeName,
-        nodeDescription: data.metadata.nodeDescription,
-        nodeAdmins: data.metadata.nodeAdmins,
+        nodeName: data.metadata?.nodeName,
+        nodeDescription: data.metadata?.nodeDescription,
+        nodeAdmins: data.metadata?.nodeAdmins,
         maintainer: {
-          name: data.metadata.maintainer.name,
-          email: data.metadata.maintainer.email,
+          name: data.metadata?.maintainer?.name,
+          email: data.metadata?.maintainer?.email,
         },
-        langs: data.metadata.langs,
-        tosUrl: data.metadata.tosUrl,
-        privacyPolicyUrl: data.metadata.privacyPolicyUrl,
-        inquiryUrl: data.metadata.inquiryUrl,
-        impressumUrl: data.metadata.impressumUrl,
-        repositoryUrl: data.metadata.repositoryUrl,
-        feedbackUrl: data.metadata.feedbackUrl,
-        disableRegistration: data.metadata.disableRegistration,
-        disableLocalTimeline: data.metadata.disableLocalTimeline,
-        disableGlobalTimeline: data.metadata.disableGlobalTimeline,
-        emailRequiredForSignup: data.metadata.emailRequiredForSignup,
-        enableHcaptcha: data.metadata.enableHcaptcha,
-        enableRecaptcha: data.metadata.enableRecaptcha,
-        enableMcaptcha: data.metadata.enableMcaptcha,
-        enableTurnstile: data.metadata.enableTurnstile,
-        maxNoteTextLength: data.metadata.maxNoteTextLength,
-        enableEmail: data.metadata.enableEmail,
-        enableServiceWorker: data.metadata.enableServiceWorker,
-        proxyAccountName: data.metadata.proxyAccountName,
-        themeColor: data.metadata.themeColor,
-      }
+        langs: data.metadata?.langs,
+        tosUrl: data.metadata?.tosUrl,
+        privacyPolicyUrl: data.metadata?.privacyPolicyUrl,
+        inquiryUrl: data.metadata?.inquiryUrl,
+        impressumUrl: data.metadata?.impressumUrl,
+        repositoryUrl: data.metadata?.repositoryUrl,
+        feedbackUrl: data.metadata?.feedbackUrl,
+        disableRegistration: data.metadata?.disableRegistration,
+        disableLocalTimeline: data.metadata?.disableLocalTimeline,
+        disableGlobalTimeline: data.metadata?.disableGlobalTimeline,
+        emailRequiredForSignup: data.metadata?.emailRequiredForSignup,
+        enableHcaptcha: data.metadata?.enableHcaptcha,
+        enableRecaptcha: data.metadata?.enableRecaptcha,
+        enableMcaptcha: data.metadata?.enableMcaptcha,
+        enableTurnstile: data.metadata?.enableTurnstile,
+        maxNoteTextLength: data.metadata?.maxNoteTextLength,
+        enableEmail: data.metadata?.enableEmail,
+        enableServiceWorker: data.metadata?.enableServiceWorker,
+        proxyAccountName: data.metadata?.proxyAccountName,
+        themeColor: data.metadata?.themeColor,
+      },
     }
   }
 
@@ -222,15 +360,15 @@ export class MisskeyModule extends Module {
       theme_color: data.theme_color,
       icons: data.icons,
       share_target: {
-        action: data.share_target.action,
-        method: data.share_target.method,
-        enctype: data.share_target.enctype,
+        action: data.share_target?.action,
+        method: data.share_target?.method,
+        enctype: data.share_target?.enctype,
         params: {
-          title: data.share_target.params.title,
-          text: data.share_target.params.text,
-          url: data.share_target.params.url,
-        }
-      }
+          title: data.share_target?.params?.title,
+          text: data.share_target?.params?.text,
+          url: data.share_target?.params?.url,
+        },
+      },
     }
   }
 }
@@ -251,15 +389,15 @@ export interface Note {
       url: string
       name: string | null
       sensitive: boolean
-    }
+    },
   ]
-  sensitive: false,
+  sensitive: boolean,
   tag: [
     {
       type: string
       href: string
       name: string
-    }
+    },
   ],
 }
 
@@ -297,7 +435,7 @@ export interface Actor {
       type: string
       href: string
       name: string
-    }
+    },
   ]
   manuallyApprovesFollowers: boolean
   discoverable: boolean
@@ -313,7 +451,7 @@ export interface Actor {
       type: boolean
       name: boolean
       value: boolean
-    }
+    },
   ]
   'vcard:Address': string
 }
@@ -348,7 +486,7 @@ export interface NodeInfo {
       {
         name: string
         email: string
-      }
+      },
     ]
     maintainer: {
       name: string
@@ -390,8 +528,8 @@ export interface Manifest {
       sizes: string
       type: string
       purpose: string
-    }
-  ],
+    },
+  ]
   share_target: {
     action: string
     method: string
