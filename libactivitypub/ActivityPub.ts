@@ -4,6 +4,14 @@ export const VERSION = '1.0' as const
 export const LIB_NAME = `libactivitypub/${VERSION}` as const
 export const USER_AGENT = `${LIB_NAME}`
 export const AP_CONTENT_TYPE = 'application/activity+json' as const
+export const LINEAGE_MISSKEY = [
+  'cherrypick',
+  'firefish',
+  'misskey',
+  'nexkey',
+  'rumisskey',
+  'sharkey',
+]
 
 export class ActivityPub {
   public module: Partial<Module> = {}
@@ -88,6 +96,13 @@ export class ActivityPub {
   }
 }
 
+export interface ManifestIcon {
+  src: string
+  sizes?: string
+  type?: string
+  purpose?: string
+}
+
 export interface NoteData {
   note: {
     id: string
@@ -156,14 +171,7 @@ export interface NoteData {
     formedName: string
     shortName: string
     themeColor: string
-    icons?: [
-      {
-        src: string
-        sizes: string
-        type: string
-        purpose: string
-      },
-    ]
+    icons?: ManifestIcon[]
     software: {
       name: string
       version: string
@@ -215,14 +223,7 @@ export interface ActorData {
     formedName: string
     shortName: string
     themeColor: string
-    icons?: [
-      {
-        src: string
-        sizes: string
-        type: string
-        purpose: string
-      },
-    ]
+    icons?: ManifestIcon[]
     software: {
       name: string
       version: string
@@ -239,14 +240,7 @@ export interface InstanceData {
     formedName: string
     shortName: string
     themeColor: string
-    icons?: [
-      {
-        src: string
-        sizes: string
-        type: string
-        purpose: string
-      },
-    ]
+    icons?: ManifestIcon[]
     software: {
       name: string
       version: string

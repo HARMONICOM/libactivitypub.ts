@@ -167,5 +167,6 @@ describe('ActivityPub のテスト', () => {
 
     expect(data?.actor.formedName).toEqual('ほげ<img src="https://e.example.com/emoji/test1.webp" alt="test1" class="emoji">')
     expect(data?.instance.formedName).toEqual('ほげほげ<img src="https://e.example.com/emoji/test2.webp" alt="test2" class="emoji">')
+    expect(data?.instance.icons?.[0].src).toEqual('https://e.example.com/static-assets/splash_192.png')
   })
 })

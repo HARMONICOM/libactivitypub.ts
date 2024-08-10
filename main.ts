@@ -1,4 +1,4 @@
-import { ActivityPub } from './libactivitypub/ActivityPub'
+import { ActivityPub, LINEAGE_MISSKEY } from './libactivitypub/ActivityPub'
 import { MisskeyModule } from './libactivitypub/Misskey'
 
 // 使い方
@@ -10,7 +10,7 @@ const note1 = {
 
 const ap1 = new ActivityPub()
 const software1 = await ActivityPub.checkTargetSoftware(note1.id)
-if (software1 === 'misskey') {
+if (LINEAGE_MISSKEY.includes(software1 ?? '')) {
   ap1.setModule(new MisskeyModule())
 }
 if (typeof ap1.module.storeNote !== 'undefined') {
@@ -29,7 +29,7 @@ const note2 = {
 
 const ap2 = new ActivityPub()
 const software2 = await ActivityPub.checkTargetSoftware(note2.attributedTo)
-if (software2 === 'misskey') {
+if (LINEAGE_MISSKEY.includes(software2 ?? '')) {
   ap2.setModule(new MisskeyModule())
 }
 await ap2.loadStatus(note2.attributedTo)
