@@ -77,7 +77,7 @@ global.fetch = jest.fn((url: string) => {
     case 'https://e.example.com/nodeinfo/2.1': {
       result = {
         software: {
-          name: 'misskey',
+          name: 'mastodon',
         },
         metadata: {
           nodeName: 'テスト',
@@ -160,7 +160,7 @@ describe('ActivityPub のテスト', () => {
     ap.setModule(new MastodonModule())
     await ap.loadNodeInfo('https://a.example.com//users/9n8xke7mpop30001')
 
-    expect(ap.module.nodeinfo.software.name).toEqual('misskey')
+    expect(ap.module.nodeinfo.software.name).toEqual('mastodon')
     expect(ap.module.nodeinfo.metadata.nodeName).toEqual('テスト')
   })
 
@@ -169,7 +169,7 @@ describe('ActivityPub のテスト', () => {
     ap.setModule(new MastodonModule())
     await ap.loadManifest('https://e.example.com//users/9n8xke7mpop30001')
 
-    expect(ap.module.manifest.name).toEqual('ほげほげ:test2:')
+    expect(ap.module.manifest.name).toEqual('ほげほげ')
     expect(ap.module.manifest.theme_color).toEqual('#ff52d4')
   })
 
@@ -179,7 +179,7 @@ describe('ActivityPub のテスト', () => {
     await ap.loadStatus('https://e.example.com//users/9n8xke7mpop30001')
     const data = ap.pickActorData()
 
-    expect(data?.actor?.formedName).toEqual('ほげ<img src="https://e.example.com/custom_emojis/images/000/001/355/original/2253f1af2d659214.png" alt="test1" class="emoji">')
+    expect(data?.actor?.formedName).toEqual('ほげ<img src="https://e.example.com/custom_emojis/images/000/001/355/original/2253f1af2d659214.png" alt=":test1:" class="emoji">')
     expect(data?.instance?.icons?.[0].src).toEqual('https://e.example.com/static-assets/splash_192.png')
   })
 })

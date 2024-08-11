@@ -130,7 +130,7 @@ export interface NoteObject {
       url: string
       name: string | null
       sensitive?: boolean
-    }?
+    }?,
   ]
   sensitive: boolean
   tag?: Tag[]
@@ -163,7 +163,7 @@ export interface ActorObject {
       type: boolean
       name: boolean
       value: boolean
-    }?
+    }?,
   ]
 }
 

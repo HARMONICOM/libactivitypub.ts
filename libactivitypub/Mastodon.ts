@@ -128,8 +128,8 @@ export class MastodonModule extends Module {
       conversation: data.conversation,
       content: data.content,
       contentMap: {
-        ja: data.contentMap.ja,
-        en: data.contentMap.en,
+        ja: data.contentMap?.ja,
+        en: data.contentMap?.en,
       },
       attachment: data.attachment,
       tag: data.tag,
@@ -191,12 +191,12 @@ export class MastodonModule extends Module {
       email: data.email,
       version: data.version,
       urls: {
-        streaming_api: data.urls.streaming_api,
+        streaming_api: data.urls?.streaming_api,
       },
       stats: {
-        user_count: data.stats.user_count,
-        status_count: data.stats.status_count,
-        domain_count: data.stats.domain_count,
+        user_count: data.stats?.user_count,
+        status_count: data.stats?.status_count,
+        domain_count: data.stats?.domain_count,
       },
       thumbnail: data.thumbnail,
       languages: data.languages,
@@ -205,53 +205,53 @@ export class MastodonModule extends Module {
       invites_enabled: data.invites_enabled,
       configuration: {
         accounts: {
-          max_featured_tags: data.configuration.accounts.max_featured_tags,
+          max_featured_tags: data.configuration?.accounts?.max_featured_tags,
         },
         statuses: {
-          max_characters: data.configuration.statuses.max_characters,
-          max_media_attachments: data.configuration.statuses.max_media_attachments,
-          characters_reserved_per_url: data.configuration.statuses.characters_reserved_per_url,
+          max_characters: data.configuration?.statuses?.max_characters,
+          max_media_attachments: data.configuration?.statuses?.max_media_attachments,
+          characters_reserved_per_url: data.configuration?.statuses?.characters_reserved_per_url,
         },
         media_attachments: {
-          supported_mime_types: data.configuration.media_attachments.supported_mime_types,
-          image_size_limit: data.configuration.media_attachments.image_size_limit,
-          image_matrix_limit: data.configuration.media_attachments.image_matrix_limit,
-          video_size_limit: data.configuration.media_attachments.video_size_limit,
-          video_frame_rate_limit: data.configuration.media_attachments.video_frame_rate_limit,
-          video_matrix_limit: data.configuration.media_attachments.video_matrix_limit,
+          supported_mime_types: data.configuration?.media_attachments?.supported_mime_types,
+          image_size_limit: data.configuration?.media_attachments?.image_size_limit,
+          image_matrix_limit: data.configuration?.media_attachments?.image_matrix_limit,
+          video_size_limit: data.configuration?.media_attachments?.video_size_limit,
+          video_frame_rate_limit: data.configuration?.media_attachments?.video_frame_rate_limit,
+          video_matrix_limit: data.configuration?.media_attachments?.video_matrix_limit,
         },
         polls: {
-          max_options: data.configuration.polls.max_options,
-          max_characters_per_option: data.configuration.polls.max_characters_per_option,
-          min_expiration: data.configuration.polls.min_expiration,
-          max_expiration: data.configuration.polls.max_expiration,
+          max_options: data.configuration?.polls?.max_options,
+          max_characters_per_option: data.configuration?.polls?.max_characters_per_option,
+          min_expiration: data.configuration?.polls?.min_expiration,
+          max_expiration: data.configuration?.polls?.max_expiration,
         },
       },
       contact_account: {
-        id: data.contact_account.id,
-        username: data.contact_account.username,
-        acct: data.contact_account.acct,
-        display_name: data.contact_account.display_name,
-        locked: data.contact_account.locked,
-        bot: data.contact_account.bot,
-        discoverable: data.contact_account.discoverable,
-        group: data.contact_account.group,
-        created_at: data.contact_account.created_at,
-        note: data.contact_account.note,
-        url: data.contact_account.url,
-        uri: data.contact_account.uri,
-        avatar: data.contact_account.avatar,
-        avatar_static: data.contact_account.avatar_static,
-        header: data.contact_account.header,
-        header_static: data.contact_account.header_static,
-        followers_count: data.contact_account.followers_count,
-        following_count: data.contact_account.following_count,
-        statuses_count: data.contact_account.statuses_count,
-        last_status_at: data.contact_account.last_status_at,
-        noindex: data.contact_account.noindex,
-        emojis: data.contact_account.emojis,
-        roles: data.contact_account.roles,
-        fields: data.contact_account.fields,
+        id: data.contact_account?.id,
+        username: data.contact_account?.username,
+        acct: data.contact_account?.acct,
+        display_name: data.contact_account?.display_name,
+        locked: data.contact_account?.locked,
+        bot: data.contact_account?.bot,
+        discoverable: data.contact_account?.discoverable,
+        group: data.contact_account?.group,
+        created_at: data.contact_account?.created_at,
+        note: data.contact_account?.note,
+        url: data.contact_account?.url,
+        uri: data.contact_account?.uri,
+        avatar: data.contact_account?.avatar,
+        avatar_static: data.contact_account?.avatar_static,
+        header: data.contact_account?.header,
+        header_static: data.contact_account?.header_static,
+        followers_count: data.contact_account?.followers_count,
+        following_count: data.contact_account?.following_count,
+        statuses_count: data.contact_account?.statuses_count,
+        last_status_at: data.contact_account?.last_status_at,
+        noindex: data.contact_account?.noindex,
+        emojis: data.contact_account?.emojis,
+        roles: data.contact_account?.roles,
+        fields: data.contact_account?.fields,
       },
       rules: data.rules,
       software: {
@@ -314,7 +314,7 @@ export class MastodonModule extends Module {
       start_url: data.start_url,
       icons: data.icons,
       share_target: {
-        url_template: data.share_target.url_template,
+        url_template: data.share_target?.url_template,
         action: data.share_target?.action,
         method: data.share_target?.method,
         enctype: data.share_target?.enctype,
@@ -610,28 +610,28 @@ export interface NodeInfo {
         url: string
         static_url: string
         visible_in_picker: boolean
-      }
+      },
     ]
     roles: [
       {
         id: string
         name: string
         color: string
-      }
+      },
     ]
     fields: [
       {
         name: string
         value: string
         verified_at: string
-      }
+      },
     ]
   },
   rules: [
     {
       id: string
       text: string
-    }
+    },
   ]
   software: {
     name: string
@@ -705,6 +705,6 @@ export interface Manifest {
     {
       name: string
       url: string
-    }
+    },
   ]
 }

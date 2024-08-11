@@ -386,7 +386,7 @@ export interface Note {
       url: string
       name: string | null
       sensitive: boolean
-    }
+    },
   ]
   sensitive: boolean,
   tag?: Tag[]
@@ -471,7 +471,7 @@ export interface NodeInfo {
       {
         name: string
         email: string
-      }
+      },
     ]
     maintainer: {
       name: string
