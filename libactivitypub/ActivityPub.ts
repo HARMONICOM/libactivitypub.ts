@@ -169,7 +169,9 @@ export interface ActorObject {
 }
 
 export interface InstanceObject {
+  name: string
   formedName: string
+  shortName: string
   formedShortName: string
   themeColor: string
   icons?: ManifestIcon[]

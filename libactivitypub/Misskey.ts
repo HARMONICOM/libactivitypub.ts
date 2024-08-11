@@ -297,7 +297,9 @@ export class MisskeyModule extends Module {
     const themeColor = this.manifest.theme_color ?? '#222222'
 
     return {
+      name: instanceName,
       formedName: MisskeyModule.deployEmoji(instanceName ?? '', host),
+      shortName: instanceShortName,
       formedShortName: MisskeyModule.deployEmoji(instanceShortName ?? '', host),
       themeColor: themeColor,
       icons: this.manifest.icons?.map((item: ManifestIcon) => {
