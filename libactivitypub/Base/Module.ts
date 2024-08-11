@@ -27,9 +27,9 @@ export abstract class Module {
   public abstract storeNodeInfo(data: any): void
   public abstract storeManifest(data: any): void
 
-  public abstract pickNoteObject(): NoteObject | undefined
-  public abstract pickActorObject(): ActorObject | undefined
-  public abstract pickInstanceObject(): InstanceObject | undefined
+  public abstract pickNoteObject(host: string): NoteObject | undefined
+  public abstract pickActorObject(host: string): ActorObject | undefined
+  public abstract pickInstanceObject(host: string): InstanceObject | undefined
 
   public abstract pickNoteData(): BundledNote | undefined
   public abstract pickActorData(): BundledActor | undefined
