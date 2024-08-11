@@ -77,17 +77,17 @@ export class ActivityPub {
     await this.loadManifest(actorUrl)
   }
 
-  public pickNoteData(): FormedNote | undefined{
+  public pickNoteData(): BundledNote | undefined{
     if (typeof this.module.pickNoteData === 'undefined') return
     return this.module.pickNoteData()
   }
 
-  public pickActorData(): FormedActor | undefined{
+  public pickActorData(): BundledActor | undefined{
     if (typeof this.module.pickActorData === 'undefined') return
     return this.module.pickActorData()
   }
 
-  public pickInstanceData(): FormedInstance | undefined{
+  public pickInstanceData(): BundledInstance | undefined{
     if (typeof this.module.pickInstanceData === 'undefined') return
     return this.module.pickInstanceData()
   }
@@ -185,17 +185,17 @@ export interface InstanceObject {
   }
 }
 
-export interface FormedNote {
+export interface BundledNote {
   note?: NoteObject
   actor?: ActorObject
   instance?: InstanceObject
 }
 
-export interface FormedActor {
+export interface BundledActor {
   actor?: ActorObject
   instance?: InstanceObject
 }
 
-export interface FormedInstance {
+export interface BundledInstance {
   instance?: InstanceObject
 }

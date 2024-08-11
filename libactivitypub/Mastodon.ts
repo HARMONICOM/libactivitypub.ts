@@ -1,9 +1,9 @@
 import {
   type ActorObject,
   AP_CONTENT_TYPE,
-  type FormedActor,
-  type FormedInstance,
-  type FormedNote,
+  type BundledActor,
+  type BundledInstance,
+  type BundledNote,
   type InstanceObject,
   LIB_NAME,
   type ManifestIcon,
@@ -346,13 +346,15 @@ export class MastodonModule extends Module {
   }
 
   public pickActorObject(): ActorObject | undefined {
+    const actorName = this.actor.name ?? this.actor.preferredUsername ?? ''
+
     return {
       type: this.actor.type ?? '',
       id: this.actor.id ?? '',
       url: this.actor.url ?? '',
       preferredUsername: this.actor.preferredUsername ?? '',
-      name: this.actor.name ?? '',
-      formedName: MastodonModule.deployEmoji(this.actor.name ?? '', this.actor.tag),
+      name: actorName,
+      formedName: MastodonModule.deployEmoji(actorName ?? '', this.actor.tag),
       icon: this.actor.icon,
       image: this.actor.image,
       tag: this.actor.tag ?? [],
@@ -388,7 +390,7 @@ export class MastodonModule extends Module {
     }
   }
 
-  public pickNoteData(): FormedNote | undefined {
+  public pickNoteData(): BundledNote | undefined {
     if (!this.note) return
     if (!this.actor) return
     if (!this.nodeinfo) return
@@ -403,7 +405,7 @@ export class MastodonModule extends Module {
     }
   }
 
-  public pickActorData(): FormedActor | undefined {
+  public pickActorData(): BundledActor | undefined {
     if (!this.actor) return
     if (!this.nodeinfo) return
     if (!this.manifest) return
@@ -416,7 +418,7 @@ export class MastodonModule extends Module {
     }
   }
 
-  public pickInstanceData(): FormedInstance | undefined {
+  public pickInstanceData(): BundledInstance | undefined {
     if (!this.nodeinfo) return
     if (!this.manifest) return
 
