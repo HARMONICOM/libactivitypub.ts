@@ -1,5 +1,5 @@
-import { ActivityPub, LINEAGE_MISSKEY } from './libactivitypub/ActivityPub'
-import { MisskeyModule } from './libactivitypub/Misskey'
+import { ActivityPub } from './libactivitypub/ActivityPub'
+import { MisskeyModule, LINEAGE_MISSKEY } from './libactivitypub/Misskey'
 
 // 使い方
 // 1.DBから取得したノート情報を元にActorやInstance等の情報を取得してノート情報を完成させる

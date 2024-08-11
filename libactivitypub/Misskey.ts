@@ -1,13 +1,25 @@
 import {
   AP_CONTENT_TYPE,
-  type ActorData,
-  type InstanceData,
   LIB_NAME,
+  type ActorData,
+  type ActorObject,
+  type InstanceData,
+  type InstanceObject,
   type ManifestIcon,
   type NoteData,
+  type NoteObject,
+  type Tag,
 } from './ActivityPub'
 import { Module } from './Base/Module'
 
+export const LINEAGE_MISSKEY = [
+  'cherrypick',
+  'firefish',
+  'misskey',
+  'nexkey',
+  'rumisskey',
+  'sharkey',
+]
 const USER_AGENT = `${LIB_NAME} (MisskeyModule)`
 
 export class MisskeyModule extends Module {
@@ -245,6 +257,63 @@ export class MisskeyModule extends Module {
     }
   }
 
+  public pickNoteObject(host: string): NoteObject | undefined {
+    return {
+      id: this.note.id ?? '',
+      type: this.note.type ?? '',
+      content: this.note.content ?? '',
+      formedContent: MisskeyModule.deployEmoji(this.note.content ?? '', host),
+      attributedTo: this.note.attributedTo ?? '',
+      published: this.note.published ?? '',
+      to: this.note.to,
+      cc: this.note.cc,
+      inReplyTo: this.note.type ?? null,
+      attachment: this.note.attachment,
+      sensitive: this.note.sensitive ?? false,
+      tag: this.note.tag,
+    }
+  }
+
+  public pickActorObject(host: string): ActorObject | undefined {
+    return {
+      type: this.actor.type ?? '',
+      id: this.actor.id ?? '',
+      url: this.actor.url ?? '',
+      preferredUsername: this.actor.preferredUsername ?? '',
+      name: this.actor.name ?? '',
+      formedName: MisskeyModule.deployEmoji(this.actor.name ?? '', host),
+      icon: this.actor.icon,
+      image: this.actor.image,
+      tag: this.actor.tag ?? [],
+      discoverable: this.actor.discoverable ?? false,
+      attachment: this.actor.attachment ?? [],
+    }
+  }
+
+  public pickInstanceObject(host: string): InstanceObject | undefined {
+    const instanceName = this.manifest.name ?? this.nodeinfo.metadata?.nodeName ?? ''
+    const instanceShortName = this.manifest.short_name ?? ''
+    const themeColor = this.manifest.theme_color ?? '#222222'
+
+    return {
+      formedName: MisskeyModule.deployEmoji(instanceName ?? '', host),
+      formedShortName: MisskeyModule.deployEmoji(instanceShortName ?? '', host),
+      themeColor: themeColor,
+      icons: this.manifest.icons?.map((item: ManifestIcon) => {
+        item.src = MisskeyModule.deployIconUrl(item.src, host)
+        return item
+      }) as ManifestIcon[],
+      software: {
+        name: this.nodeinfo.software?.name ?? '',
+        version: this.nodeinfo.software?.version ?? '',
+      },
+      metadata: {
+        nodeName: this.nodeinfo.metadata?.nodeName ?? '',
+        themeColor: this.nodeinfo.metadata?.themeColor ?? '',
+      },
+    }
+  }
+
   public pickNoteData(): NoteData | undefined {
     if (!this.note) return
     if (!this.actor) return
@@ -252,55 +321,11 @@ export class MisskeyModule extends Module {
     if (!this.manifest) return
 
     const host = new URL(this.note.id ?? '').host
-    const instanceName = this.manifest.name ?? this.nodeinfo.metadata?.nodeName ?? ''
-    const instanceShortName = this.manifest.short_name ?? ''
-    const themeColor = this.nodeinfo.metadata?.themeColor ?? this.manifest.theme_color ?? '#222222'
 
     return {
-      note: {
-        id: this.note.id ?? '',
-        type: this.note.type ?? '',
-        content: this.note.content ?? '',
-        formedContent: MisskeyModule.deployEmoji(this.note.content ?? '', host),
-        attributedTo: this.note.attributedTo ?? '',
-        published: this.note.published ?? '',
-        to: this.note.to,
-        cc: this.note.cc,
-        inReplyTo: this.note.type ?? null,
-        attachment: this.note.attachment,
-        sensitive: this.note.sensitive ?? false,
-        tag: this.note.tag,
-      },
-      actor: {
-        type: this.actor.type ?? '',
-        id: this.actor.id ?? '',
-        url: this.actor.url ?? '',
-        preferredUsername: this.actor.preferredUsername ?? '',
-        name: this.actor.name ?? '',
-        formedName: MisskeyModule.deployEmoji(this.actor.name ?? '', host),
-        icon: this.actor.icon,
-        image: this.actor.image,
-        tag: this.actor.tag ?? [],
-        discoverable: this.actor.discoverable ?? false,
-        attachment: this.actor.attachment ?? [],
-      },
-      instance: {
-        formedName: MisskeyModule.deployEmoji(instanceName ?? '', host),
-        shortName: MisskeyModule.deployEmoji(instanceShortName ?? '', host),
-        themeColor: themeColor,
-        icons: this.manifest.icons?.map((item: ManifestIcon) => {
-          item.src = MisskeyModule.deployIconUrl(item.src, host)
-          return item
-        }) as ManifestIcon[],
-        software: {
-          name: this.nodeinfo.software?.name ?? '',
-          version: this.nodeinfo.software?.version ?? '',
-        },
-        metadata: {
-          nodeName: this.nodeinfo.metadata?.nodeName ?? '',
-          themeColor: this.nodeinfo.metadata?.themeColor ?? '',
-        },
-      },
+      note: this.pickNoteObject(host),
+      actor: this.pickActorObject(host),
+      instance: this.pickInstanceObject(host),
     }
   }
 
@@ -310,41 +335,10 @@ export class MisskeyModule extends Module {
     if (!this.manifest) return
 
     const host = new URL(this.actor.id ?? '').host
-    const instanceName = this.manifest.name ?? this.nodeinfo.metadata?.nodeName ?? ''
-    const instanceShortName = this.manifest.short_name ?? ''
-    const themeColor = this.nodeinfo.metadata?.themeColor ?? this.manifest.theme_color ?? '#222222'
 
     return {
-      actor: {
-        type: this.actor.type ?? '',
-        id: this.actor.id ?? '',
-        url: this.actor.url ?? '',
-        preferredUsername: this.actor.preferredUsername ?? '',
-        name: this.actor.name ?? '',
-        formedName: MisskeyModule.deployEmoji(this.actor.name ?? '', host),
-        icon: this.actor.icon,
-        image: this.actor.image,
-        tag: this.actor.tag ?? [],
-        discoverable: this.actor.discoverable ?? false,
-        attachment: this.actor.attachment ?? [],
-      },
-      instance: {
-        formedName: MisskeyModule.deployEmoji(instanceName ?? '', host),
-        shortName: MisskeyModule.deployEmoji(instanceShortName ?? '', host),
-        themeColor: themeColor,
-        icons: this.manifest.icons?.map((item: ManifestIcon) => {
-          item.src = MisskeyModule.deployIconUrl(item.src, host)
-          return item
-        }) as ManifestIcon[],
-        software: {
-          name: this.nodeinfo.software?.name ?? '',
-          version: this.nodeinfo.software?.version ?? '',
-        },
-        metadata: {
-          nodeName: this.nodeinfo.metadata?.nodeName ?? '',
-          themeColor: this.nodeinfo.metadata?.themeColor ?? '',
-        },
-      },
+      actor: this.pickActorObject(host),
+      instance: this.pickInstanceObject(host),
     }
   }
 
@@ -353,42 +347,23 @@ export class MisskeyModule extends Module {
     if (!this.manifest) return
 
     const host = new URL(this.actor.id ?? '').host
-    const instanceName = this.manifest.name ?? this.nodeinfo.metadata?.nodeName ?? ''
-    const instanceShortName = this.manifest.short_name ?? ''
-    const themeColor = this.nodeinfo.metadata?.themeColor ?? this.manifest.theme_color ?? '#222222'
 
     return {
-      instance: {
-        formedName: MisskeyModule.deployEmoji(instanceName ?? '', host),
-        shortName: MisskeyModule.deployEmoji(instanceShortName ?? '', host),
-        themeColor: themeColor,
-        icons: this.manifest.icons?.map((item: ManifestIcon) => {
-          item.src = MisskeyModule.deployIconUrl(item.src, host)
-          return item
-        }) as ManifestIcon[],
-        software: {
-          name: this.nodeinfo.software?.name ?? '',
-          version: this.nodeinfo.software?.version ?? '',
-        },
-        metadata: {
-          nodeName: this.nodeinfo.metadata?.nodeName ?? '',
-          themeColor: this.nodeinfo.metadata?.themeColor ?? '',
-        },
-      },
+      instance: this.pickInstanceObject(host),
     }
   }
 
-  public static deployEmoji(content: string, domain: string) {
+  public static deployEmoji(content: string, host: string) {
     return content.replace(
       /:([0-9a-zA-Z_]{3,}):/g,
-      `<img src="https://${domain}/emoji/$1.webp" alt="$1" class="emoji">`,
+      `<img src="https://${host}/emoji/$1.webp" alt="$1" class="emoji">`,
     )
   }
 
-  public static deployIconUrl(iconUrl: string, domain: string) {
+  public static deployIconUrl(iconUrl: string, host: string) {
     let result = iconUrl
     if (!result.match(/^https?/i)) {
-      result = `https://${domain}${iconUrl}`
+      result = `https://${host}${iconUrl}`
     }
     return result
   }
@@ -411,16 +386,10 @@ export interface Note {
       url: string
       name: string | null
       sensitive: boolean
-    },
+    }
   ]
   sensitive: boolean,
-  tag: [
-    {
-      type: string
-      href: string
-      name: string
-    },
-  ],
+  tag?: Tag[]
 }
 
 export interface Actor {
@@ -452,13 +421,7 @@ export interface Actor {
     sensitive: boolean
     name: string | null
   }
-  tag: [
-    {
-      type: string
-      href: string
-      name: string
-    },
-  ]
+  tag?: Tag[]
   manuallyApprovesFollowers: boolean
   discoverable: boolean
   publicKey: {
@@ -485,12 +448,12 @@ export interface NodeInfo {
     version: string
     homepage: string
     repository: string
-  },
+  }
   protocols: string[]
   services: {
     inbound: string[]
     outbound: string[]
-  },
+  }
   openRegistrations: boolean
   usage: {
     users: {
@@ -508,7 +471,7 @@ export interface NodeInfo {
       {
         name: string
         email: string
-      },
+      }
     ]
     maintainer: {
       name: string
@@ -544,7 +507,7 @@ export interface Manifest {
   display: string
   background_color: string
   theme_color: string
-  icons: ManifestIcon[],
+  icons: ManifestIcon[]
   share_target: {
     action: string
     method: string
