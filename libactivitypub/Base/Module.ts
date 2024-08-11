@@ -1,4 +1,4 @@
-import type { ActorData, InstanceData, NoteData } from '../ActivityPub'
+import type { FormedActor, FormedInstance, FormedNote } from '../ActivityPub'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export abstract class Module {
@@ -20,7 +20,7 @@ export abstract class Module {
   public abstract storeNodeInfo(data: any): void
   public abstract storeManifest(data: any): void
 
-  public abstract pickNoteData(): NoteData | undefined
-  public abstract pickActorData(): ActorData | undefined
-  public abstract pickInstanceData(): InstanceData | undefined
+  public abstract pickNoteData(): FormedNote | undefined
+  public abstract pickActorData(): FormedActor | undefined
+  public abstract pickInstanceData(): FormedInstance | undefined
 }

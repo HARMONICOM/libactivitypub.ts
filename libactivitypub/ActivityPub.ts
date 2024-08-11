@@ -4,14 +4,6 @@ export const VERSION = '1.0' as const
 export const LIB_NAME = `libactivitypub/${VERSION}` as const
 export const USER_AGENT = `${LIB_NAME}`
 export const AP_CONTENT_TYPE = 'application/activity+json' as const
-export const LINEAGE_MISSKEY = [
-  'cherrypick',
-  'firefish',
-  'misskey',
-  'nexkey',
-  'rumisskey',
-  'sharkey',
-]
 
 export class ActivityPub {
   public module: Partial<Module> = {}
@@ -85,14 +77,19 @@ export class ActivityPub {
     await this.loadManifest(actorUrl)
   }
 
-  public pickNoteData(): NoteData | undefined{
+  public pickNoteData(): FormedNote | undefined{
     if (typeof this.module.pickNoteData === 'undefined') return
     return this.module.pickNoteData()
   }
 
-  public pickActorData(): ActorData | undefined{
+  public pickActorData(): FormedActor | undefined{
     if (typeof this.module.pickActorData === 'undefined') return
     return this.module.pickActorData()
+  }
+
+  public pickInstanceData(): FormedInstance | undefined{
+    if (typeof this.module.pickInstanceData === 'undefined') return
+    return this.module.pickInstanceData()
   }
 }
 
@@ -103,152 +100,100 @@ export interface ManifestIcon {
   purpose?: string
 }
 
-export interface NoteData {
-  note: {
-    id: string
+export interface Tag {
+  type: string
+  name: string
+  href?: string
+  id?: string,
+  updated?: string
+  icon?: {
     type: string
-    content: string
-    formedContent: string
-    attributedTo: string
-    published: string
-    to?: string[]
-    cc?: string[]
-    inReplyTo: string | null
-    attachment?: [
-      {
-        type: string
-        mediaType: string
-        url: string
-        name: string | null
-        sensitive: boolean
-      }?,
-    ]
-    sensitive: boolean
-    tag?: [
-      {
-        type: string
-        href: string
-        name: string
-      }?,
-    ]
-  }
-  actor: {
-    type: string
-    id: string
+    mediaType: string
     url: string
-    preferredUsername: string
+  }
+}
+
+export interface NoteObject {
+  id: string
+  type: string
+  content: string
+  formedContent: string
+  attributedTo: string
+  published: string
+  to?: string[]
+  cc?: string[]
+  inReplyTo: string | null
+  attachment?: [
+    {
+      type: string
+      mediaType: string
+      url: string
+      name: string | null
+      sensitive?: boolean
+    }?,
+  ]
+  sensitive: boolean
+  tag?: Tag[]
+}
+
+export interface ActorObject {
+  type: string
+  id: string
+  url: string
+  preferredUsername: string
+  name: string
+  formedName: string
+  icon?: {
+    type?: string
+    url?: string
+    sensitive?: boolean
+    name?: string | null
+  }
+  image?: {
+    type?: string
+    mediaType?: string
+    url?: string
+    sensitive?: boolean
+    name?: string | null
+  }
+  tag: Tag[]
+  discoverable: boolean
+  indexable: boolean
+  attachment: [
+    {
+      type: boolean
+      name: boolean
+      value: boolean
+    }?,
+  ]
+}
+
+export interface InstanceObject {
+  formedName: string
+  formedShortName: string
+  themeColor: string
+  icons?: ManifestIcon[]
+  software: {
     name: string
-    formedName: string
-    icon?: {
-      type: string
-      url: string
-      sensitive: boolean
-      name: string | null
-    }
-    image?: {
-      type: string
-      url: string
-      sensitive: boolean
-      name: string | null
-    }
-    tag: [
-      {
-        type: string
-        href: string
-        name: string
-      }?,
-    ]
-    discoverable: boolean
-    attachment: [
-      {
-        type: boolean
-        name: boolean
-        value: boolean
-      }?,
-    ]
+    version: string
   }
-  instance: {
-    formedName: string
-    shortName: string
+  metadata: {
+    nodeName: string
     themeColor: string
-    icons?: ManifestIcon[]
-    software: {
-      name: string
-      version: string
-    },
-    metadata: {
-      nodeName: string
-      themeColor: string
-    }
   }
 }
 
-export interface ActorData {
-  actor: {
-    type: string
-    id: string
-    url: string
-    preferredUsername: string
-    name: string
-    formedName: string
-    icon?: {
-      type: string
-      url: string
-      sensitive: boolean
-      name: string | null
-    }
-    image?: {
-      type: string
-      url: string
-      sensitive: boolean
-      name: string | null
-    }
-    tag: [
-      {
-        type: string
-        href: string
-        name: string
-      }?,
-    ]
-    discoverable: boolean
-    attachment: [
-      {
-        type: boolean
-        name: boolean
-        value: boolean
-      }?,
-    ]
-  }
-  instance: {
-    formedName: string
-    shortName: string
-    themeColor: string
-    icons?: ManifestIcon[]
-    software: {
-      name: string
-      version: string
-    },
-    metadata: {
-      nodeName: string
-      themeColor: string
-    }
-  }
+export interface FormedNote {
+  note?: NoteObject
+  actor?: ActorObject
+  instance?: InstanceObject
 }
 
-export interface InstanceData {
-  instance: {
-    formedName: string
-    shortName: string
-    themeColor: string
-    icons?: ManifestIcon[]
-    software: {
-      name: string
-      version: string
-    },
-    metadata: {
-      nodeName: string
-      themeColor: string
-    }
-  }
+export interface FormedActor {
+  actor?: ActorObject
+  instance?: InstanceObject
 }
 
+export interface FormedInstance {
+  instance?: InstanceObject
+}
