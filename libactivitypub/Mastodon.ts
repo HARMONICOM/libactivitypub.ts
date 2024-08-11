@@ -368,7 +368,9 @@ export class MastodonModule extends Module {
     const themeColor = this.manifest.theme_color ?? '#222222'
 
     return {
+      name: instanceName,
       formedName: instanceName,
+      shortName: instanceShortName,
       formedShortName: instanceShortName,
       themeColor: themeColor,
       icons: this.manifest.icons?.map((item: ManifestIcon) => {
