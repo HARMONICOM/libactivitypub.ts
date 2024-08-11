@@ -1,12 +1,12 @@
 import {
-  AP_CONTENT_TYPE,
-  LIB_NAME,
-  type ActorData,
   type ActorObject,
-  type InstanceData,
+  AP_CONTENT_TYPE,
+  type FormedActor,
+  type FormedInstance,
+  type FormedNote,
   type InstanceObject,
+  LIB_NAME,
   type ManifestIcon,
-  type NoteData,
   type NoteObject,
   type Tag,
 } from './ActivityPub'
@@ -357,6 +357,7 @@ export class MastodonModule extends Module {
       image: this.actor.image,
       tag: this.actor.tag ?? [],
       discoverable: this.actor.discoverable ?? false,
+      indexable: this.actor.indexable ?? false,
       attachment: this.actor.attachment ?? [],
     }
   }
@@ -385,7 +386,7 @@ export class MastodonModule extends Module {
     }
   }
 
-  public pickNoteData(): NoteData | undefined {
+  public pickNoteData(): FormedNote | undefined {
     if (!this.note) return
     if (!this.actor) return
     if (!this.nodeinfo) return
@@ -400,7 +401,7 @@ export class MastodonModule extends Module {
     }
   }
 
-  public pickActorData(): ActorData | undefined {
+  public pickActorData(): FormedActor | undefined {
     if (!this.actor) return
     if (!this.nodeinfo) return
     if (!this.manifest) return
@@ -413,7 +414,7 @@ export class MastodonModule extends Module {
     }
   }
 
-  public pickInstanceData(): InstanceData | undefined {
+  public pickInstanceData(): FormedInstance | undefined {
     if (!this.nodeinfo) return
     if (!this.manifest) return
 

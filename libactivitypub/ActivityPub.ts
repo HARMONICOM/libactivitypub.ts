@@ -77,17 +77,17 @@ export class ActivityPub {
     await this.loadManifest(actorUrl)
   }
 
-  public pickNoteData(): NoteData | undefined{
+  public pickNoteData(): FormedNote | undefined{
     if (typeof this.module.pickNoteData === 'undefined') return
     return this.module.pickNoteData()
   }
 
-  public pickActorData(): ActorData | undefined{
+  public pickActorData(): FormedActor | undefined{
     if (typeof this.module.pickActorData === 'undefined') return
     return this.module.pickActorData()
   }
 
-  public pickInstanceData(): InstanceData | undefined{
+  public pickInstanceData(): FormedInstance | undefined{
     if (typeof this.module.pickInstanceData === 'undefined') return
     return this.module.pickInstanceData()
   }
@@ -158,6 +158,7 @@ export interface ActorObject {
   }
   tag: Tag[]
   discoverable: boolean
+  indexable: boolean
   attachment: [
     {
       type: boolean
@@ -182,17 +183,17 @@ export interface InstanceObject {
   }
 }
 
-export interface NoteData {
+export interface FormedNote {
   note?: NoteObject
   actor?: ActorObject
   instance?: InstanceObject
 }
 
-export interface ActorData {
+export interface FormedActor {
   actor?: ActorObject
   instance?: InstanceObject
 }
 
-export interface InstanceData {
+export interface FormedInstance {
   instance?: InstanceObject
 }

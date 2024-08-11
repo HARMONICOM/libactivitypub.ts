@@ -1,12 +1,12 @@
 import {
-  AP_CONTENT_TYPE,
-  LIB_NAME,
-  type ActorData,
   type ActorObject,
-  type InstanceData,
+  AP_CONTENT_TYPE,
+  type FormedActor,
+  type FormedInstance,
+  type FormedNote,
   type InstanceObject,
+  LIB_NAME,
   type ManifestIcon,
-  type NoteData,
   type NoteObject,
   type Tag,
 } from './ActivityPub'
@@ -286,6 +286,7 @@ export class MisskeyModule extends Module {
       image: this.actor.image,
       tag: this.actor.tag ?? [],
       discoverable: this.actor.discoverable ?? false,
+      indexable: false,
       attachment: this.actor.attachment ?? [],
     }
   }
@@ -314,7 +315,7 @@ export class MisskeyModule extends Module {
     }
   }
 
-  public pickNoteData(): NoteData | undefined {
+  public pickNoteData(): FormedNote | undefined {
     if (!this.note) return
     if (!this.actor) return
     if (!this.nodeinfo) return
@@ -329,7 +330,7 @@ export class MisskeyModule extends Module {
     }
   }
 
-  public pickActorData(): ActorData | undefined {
+  public pickActorData(): FormedActor | undefined {
     if (!this.actor) return
     if (!this.nodeinfo) return
     if (!this.manifest) return
@@ -342,7 +343,7 @@ export class MisskeyModule extends Module {
     }
   }
 
-  public pickInstanceData(): InstanceData | undefined {
+  public pickInstanceData(): FormedInstance | undefined {
     if (!this.nodeinfo) return
     if (!this.manifest) return
 
@@ -356,7 +357,7 @@ export class MisskeyModule extends Module {
   public static deployEmoji(content: string, host: string) {
     return content.replace(
       /:([0-9a-zA-Z_]{3,}):/g,
-      `<img src="https://${host}/emoji/$1.webp" alt="$1" class="emoji">`,
+      `<img src="https://${host}/emoji/$1.webp" alt=":$1:" class="emoji">`,
     )
   }
 

@@ -33,6 +33,17 @@ export default [
     },
     rules: {
       'no-multiple-empty-lines': ['error', { 'max': 2, 'maxEOF': 1, 'maxBOF': 0 }],
+      'sort-vars': 'error',
+      'sort-imports': [
+        'error',
+        {
+          'allowSeparatedGroups': true,
+          'ignoreCase': true,
+          'ignoreDeclarationSort': true,
+          'ignoreMemberSort': false,
+          'memberSyntaxSortOrder': ['none', 'all', 'multiple', 'single'],
+        },
+      ],
       '@stylistic/ts/semi': ['error', 'never'],
       '@stylistic/ts/indent': ['error', 2],
       '@stylistic/ts/quotes': ['error', 'single'],
