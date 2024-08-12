@@ -23,6 +23,7 @@ export const LINEAGE_MISSKEY = [
 const USER_AGENT = `${LIB_NAME} (MisskeyModule)`
 
 export class MisskeyModule extends Module {
+  public name: string = ''
   public note: Partial<Note> = {}
   public actor: Partial<Actor> = {}
   public nodeinfo: Partial<NodeInfo> = {}
@@ -30,6 +31,7 @@ export class MisskeyModule extends Module {
 
   constructor() {
     super()
+    this.name = 'misskey'
     this.note = {}
     this.actor = {}
     this.nodeinfo = {}
@@ -287,8 +289,8 @@ export class MisskeyModule extends Module {
       icon: this.actor.icon,
       image: this.actor.image,
       tag: this.actor.tag ?? [],
-      discoverable: this.actor.discoverable ?? false,
-      indexable: false,
+      discoverable: this.actor.discoverable ?? true,
+      indexable: true,
       attachment: this.actor.attachment ?? [],
     }
   }
@@ -299,6 +301,7 @@ export class MisskeyModule extends Module {
     const themeColor = this.manifest.theme_color ?? '#222222'
 
     return {
+      url: `https://${host}/`,
       name: instanceName,
       formedName: MisskeyModule.deployEmoji(instanceName ?? '', host),
       shortName: instanceShortName,

@@ -9,6 +9,7 @@ import type {
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export abstract class Module {
+  public abstract name: string
   public abstract note: any
   public abstract actor: any
   public abstract nodeinfo: any
