@@ -14,10 +14,13 @@ import { Module } from './Base/Module'
 
 export const LINEAGE_MASTODON = [
   'mastodon',
+  'kmyblue',
+  'fedibird',
 ]
 const USER_AGENT = `${LIB_NAME} (MastodonModule)`
 
 export class MastodonModule extends Module {
+  public name: string = ''
   public note: Partial<Note> = {}
   public actor: Partial<Actor> = {}
   public nodeinfo: Partial<NodeInfo> = {}
@@ -25,6 +28,7 @@ export class MastodonModule extends Module {
 
   constructor() {
     super()
+    this.name = 'mastodon'
     this.note = {}
     this.actor = {}
     this.nodeinfo = {}
@@ -358,8 +362,8 @@ export class MastodonModule extends Module {
       icon: this.actor.icon,
       image: this.actor.image,
       tag: this.actor.tag ?? [],
-      discoverable: this.actor.discoverable ?? false,
-      indexable: this.actor.indexable ?? false,
+      discoverable: this.actor.discoverable ?? true,
+      indexable: this.actor.indexable ?? true,
       attachment: this.actor.attachment ?? [],
     }
   }
@@ -370,6 +374,7 @@ export class MastodonModule extends Module {
     const themeColor = this.manifest.theme_color ?? '#222222'
 
     return {
+      url: `https://${host}/`,
       name: instanceName,
       formedName: instanceName,
       shortName: instanceShortName,
@@ -430,6 +435,7 @@ export class MastodonModule extends Module {
   }
 
   public static deployEmoji(content: string, tag: Tag[] = []) {
+    if (!tag) return content
     let result = content
     for (const obj of tag) {
       if (obj.type === 'Emoji') {

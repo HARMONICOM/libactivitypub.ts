@@ -169,6 +169,7 @@ export interface ActorObject {
 }
 
 export interface InstanceObject {
+  url: string
   name: string
   formedName: string
   shortName: string
